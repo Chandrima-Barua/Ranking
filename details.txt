@@ -1,0 +1,16 @@
+1. create a database named 'myrankdb' in phpmyadmin.
+2. import the sql file named "myrankdb.sql".
+3. Go to "http://localhost/rankmylist/login.php"
+4. If you are not registered, click "Sign up now".
+5. After registering , click on "View Contents" button.
+6.You must put the lists_pointer in the url. Example:"http://localhost/rankmylist/content_with_image.php?lists_pointer=1"
+7. The project was made for seeing the ranking of posts based on the number of like and dislike by doing some calculation.
+8. Posts can be sorted instantly just like facebook by just the calculation of like and dislike.
+9. When you like/dislike on others post, you can see the immediate sorting there
+10. Any kind of multimedia and embedded links work in this project if anyone wants to upload
+
+
+** Configuration**
+1. My PhP version in 7.4.6. So all codes are according to this version ( Just for a reminder)
+2. Need to install imagick as i have used many packages from imagick. With it, any multimedia can not be uploaded
+

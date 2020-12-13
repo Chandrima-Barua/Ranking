@@ -1,0 +1,173 @@
+//contributionslikedislike_index1
+CREATE TABLE `rmldatabase`.`contributionslikedislike_index_1` ( `id` INT(255) UNSIGNED NOT NULL AUTO_INCREMENT , `user_id` INT(255) NOT NULL , `like_status` TINYINT(2) NOT NULL , `dislike_status` TINYINT(2) NOT NULL , `contributions_pointer` INT(255) NOT NULL , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `contributionslikedislike_pointer` INT(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+//contributionse_update1
+CREATE TABLE `contributions_update2` (
+  `id` int(255) NOT NULL,
+  `text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `lists_pointer` int(255) NOT NULL,
+  `selected` tinyint(1) DEFAULT '0',
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ip` int(40) NOT NULL,
+  `contributions_pointer` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+//contributions_index1
+CREATE TABLE `contributions_index1` (
+  `id` int(255) NOT NULL,
+  `text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `lists_pointer` int(255) NOT NULL,
+  `selected` tinyint(1) DEFAULT '0',
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ip` int(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+//like dislike to like_status dislike_status
+ALTER TABLE `contributionslikedislike_queue2` CHANGE `dislikes` `dislike_status` TINYINT(2) NOT NULL;
+
+//add new 3 column in all 6 table of contributions
+ALTER TABLE `contributions` ADD `likes` INT(11) NOT NULL AFTER `ip`, ADD `dislikes` INT(11) NOT NULL AFTER `likes`, ADD `score` FLOAT NOT NULL AFTER `dislikes`;
+ALTER TABLE `contributions_index2` ADD `likes` INT(11) NOT NULL AFTER `ip`, ADD `dislikes` INT(11) NOT NULL AFTER `likes`, ADD `score` FLOAT NOT NULL AFTER `dislikes`;
+
+//Rename contributions_pointer to contributions_pointer in all contributionslikedislike tables
+ALTER TABLE `contributionslikedislike` CHANGE `contributions_pointer` `contributions_pointer` INT(255) NOT NULL;
+
+// Rename content column to lists
+RENAME TABLE content TO lists
+
+//Add new column in lists table
+ALTER TABLE `lists` ADD `total_contribution` INT(255) NOT NULL AFTER `time`;
+
+//lists for 6 table queries
+CREATE TABLE `lists_index1` (
+  `id` int(255) NOT NULL,
+  `content` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_id` int(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `total_contribution` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+//add lists_pointer column in 6 table of list
+ALTER TABLE `lists_index1` ADD `lists_pointer` INT(255) NOT NULL AFTER `total_contribution`;
+
+
+ALTER TABLE `contributions` CHANGE `lists_pointer` `lists_pointer` INT(255) NOT NULL;
+
+//UPDATE `lists_index1` INNER JOIN ( SELECT `lists_pointer`, COALESCE (COUNT(`id`),0) AS `total_value` FROM `contributions_queue1` GROUP BY `lists_pointer` ) AS temp ON `lists_index1`.`lists_pointer` = temp.`lists_pointer` SET `lists_index1`.`total_contribution` = `lists_index1`.`total_contribution`+ temp.`total_value`//
+
+
+//creating primary key
+ALTER TABLE `lists_update2` ADD PRIMARY KEY( `id`);
+
+//add new column content_censored in list and contribution table with 6 table
+ALTER TABLE `lists` ADD `content_censored` LONGTEXT NULL DEFAULT NULL AFTER `content`;
+
+
+ALTER TABLE `contributions` CHANGE `text` `text` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+//droping text_censored column for queue table
+ALTER TABLE `contributions_queue2`
+  DROP `text_censored`;
+
+  //dob column in user table
+ALTER TABLE `users` ADD `dob` DATE NOT NULL AFTER `created_at`;
+
+//add new columns in contribution table and 6 table
+ALTER TABLE `contributions` ADD `recorded` TINYINT(2) NOT NULL DEFAULT '1' AFTER `score`, ADD `time_offset_delete` TINYINT(2) NOT NULL AFTER `recorded`;
+ALTER TABLE `contributions` ADD `time_offset_add` TINYINT(2) NOT NULL AFTER `time_offset_delete`;
+
+//flag table create sql
+CREATE TABLE `rmldatabase`.`contributionflag` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `contributions_pointer` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `users_pointer` INT(255) NOT NULL , `flaguser_pointer` INT(255) NOT NULL , `recorded` TINYINT(2) NOT NULL DEFAULT '1' , `abusive` TINYINT(2) NOT NULL , `spam` TINYINT(2) NOT NULL , `Infringment` TINYINT(2) NOT NULL , `ip_pointer` INT(11) NOT NULL , `time` DATETIME NOT NULL , `time_offset` FLOAT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+ALTER TABLE `contributionflag` CHANGE `Infringment` `infringment` TINYINT(2) NOT NULL DEFAULT '0';
+
+//flag 4  table create sql
+CREATE TABLE `rmldatabase`.`contributionflag_index1` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `contributions_pointer` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `users_pointer` INT(255) NOT NULL , `flaguser_pointer` INT(255) NOT NULL , `recorded` TINYINT(2) NOT NULL DEFAULT '1' , `abusive` TINYINT(2) NOT NULL DEFAULT '0' , `spam` TINYINT(2) NOT NULL DEFAULT '0' , `infringment` TINYINT(2) NOT NULL DEFAULT '0' , `ip_pointer` INT(11) NOT NULL , `time` DATETIME NOT NULL , `time_offset` FLOAT NOT NULL , `contributionflag_pointer` INT(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+//changeing the name of infrigment
+ALTER TABLE `contributionflag` CHANGE `infringment` `iip` TINYINT(2) NOT NULL DEFAULT '0';
+
+
+                         //add new column in contribution 7 table (total_spam. total_abusive , total_iip)
+ALTER TABLE `contributions` ADD `total_spam` INT(11) NOT NULL AFTER `recorded`, ADD `total_abusive` INT(11) NOT NULL AFTER `total_spam`, ADD `total_iip` INT(11) NOT NULL AFTER `total_abusive`;
+
+
+
+...............................................// for creating multimedia_contributions table and 6 table//.......................................
+
+CREATE TABLE `rmldatabase`.`multimedia_contributions` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `image` VARCHAR(255) NOT NULL , `user_id` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `selected` TINYINT(2) NULL DEFAULT '0' , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `ip` INT(40) NOT NULL , `likes` INT(11) NOT NULL , `dislikes` INT(11) NOT NULL , `score` FLOAT NOT NULL , `recorded` TINYINT(2) NOT NULL DEFAULT '1' , `total_spam` INT(11) NOT NULL , `total_abusive` INT(11) NOT NULL , `total_iip` INT(11) NOT NULL , `time_offset_delete` TINYINT(2) NOT NULL , `time_offset_add` TINYINT(2) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+CREATE TABLE `rmldatabase`.`multimedia_contributions_index1` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `image` VARCHAR(255) NOT NULL , `user_id` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `selected` TINYINT(2) NULL DEFAULT '0' , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `ip` INT(40) NOT NULL , `likes` INT(11) NOT NULL , `dislikes` INT(11) NOT NULL , `score` FLOAT NOT NULL , `recorded` TINYINT(2) NOT NULL DEFAULT '1' , `total_spam` INT(11) NOT NULL , `total_abusive` INT(11) NOT NULL , `total_iip` INT(11) NOT NULL , `time_offset_delete` TINYINT(2) NOT NULL , `time_offset_add` TINYINT(2) NOT NULL , `multimedia_contributions_pointer` INT(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+//for multimedia contribution like dislike table
+
+CREATE TABLE `myrankdb`.`multimedialikedislike` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `user_id` INT(255) NOT NULL , `like_status` TINYINT(2) NOT NULL , `dislike_status` TINYINT(2) NOT NULL , `multimedia_contributions_pointer` INT(255) NOT NULL , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+//for 4 table of multimedia like dislike 4 table
+CREATE TABLE `myrankdb`.`multimedialikedislike_index1` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `user_id` INT(255) NOT NULL , `like_status` TINYINT(2) NOT NULL , `dislike_status` TINYINT(2) NOT NULL , `multimedia_contributions_pointer` INT(255) NOT NULL , `time` DATETIME NOT NULL , `multimedialikedislike_pointer` INT(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+//for multimedia_contribution flag and 4 table
+CREATE TABLE `myrankdb`.`multimedia_contributionflag` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `multimedia_contributions_pointer` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `users_pointer` INT(255) NOT NULL , `flaguser_pointer` INT(255) NOT NULL , `abusive` TINYINT(2) NOT NULL , `spam` TINYINT(2) NOT NULL , `iip` TINYINT(2) NOT NULL , `ip_pointer` INT(11) NOT NULL , `time` DATETIME NOT NULL , `time_offset` FLOAT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+CREATE TABLE `myrankdb`.`multimedia_contributionflag_index1` ( `id` INT(255) NOT NULL AUTO_INCREMENT , `multimedia_contributions_pointer` INT(255) NOT NULL , `lists_pointer` INT(255) NOT NULL , `users_pointer` INT(255) NOT NULL , `flaguser_pointer` INT(255) NOT NULL , `abusive` TINYINT(2) NOT NULL , `spam` TINYINT(2) NOT NULL , `iip` TINYINT(2) NOT NULL , `ip_pointer` INT(11) NOT NULL , `time` DATETIME NOT NULL , `time_offset` FLOAT NOT NULL , `multimedia_contributionflag_pointer` INT(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+//for changing the default value od spam, abusive and iip column in multimedia contribution table
+ALTER TABLE `multimedia_contributionflag_index1` CHANGE `abusive` `abusive` TINYINT(2) NOT NULL DEFAULT '0', CHANGE `spam` `spam` TINYINT(2) NOT NULL DEFAULT '0', CHANGE `iip` `iip` TINYINT(2) NOT NULL DEFAULT '0';
+
+//changing the column name of multimediacontribution_pointer of 4 table of multimedialikedislike
+ALTER TABLE `multimedialikedislike_index1` CHANGE `multimedia_contributions_pointer` `multimedia_contributions_pointer` INT(255) NOT NULL;
+
+
+//changing the column name of multimediacontribution_pointer  of multimedialikedislike
+
+ALTER TABLE `multimedialikedislike` CHANGE `multimediacontribution_pointer` `multimedia_contributions_pointer` INT(255) NOT NULL;
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+database table name changing after modification
+////for likedislike historical table
+RENAME TABLE multimedialikedislike TO multimedia_contributionslikedislike;
+
+
+////for likedislike 4 table
+RENAME TABLE multimedialikedislike_index2 TO multimedia_contributionslikedislike_index2;
+RENAME TABLE multimedialikedislike_queue1 TO multimedia_contributionslikedislike_queue1;
+
+
+ALTER TABLE `multimedia_contributionslikedislike_index1` CHANGE `multimedialikedislike_pointer` `multimedia_contributionslikedislike_pointer` INT(255) NOT NULL;
+
+
+////// table alter for cronjob
+ALTER TABLE `cronjobstatus` CHANGE `type` `type` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_general_ci NULL DEFAULT NULL;
+
+//new column for giphy, getty and gifcat
+ALTER TABLE `multimedia_contributions` ADD `gettyimageid` VARCHAR(200) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `score`, ADD `giphyid` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `gettyimageid`, ADD `gfycatid` VARCHAR(500) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `giphyid`;
+
+
+ALTER TABLE `multimedia_contributions_index1` ADD `gettyimageid` VARCHAR(200) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `score`, ADD `giphyid` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `gettyimageid`, ADD `gfycatid` VARCHAR(500) CHARACTER SET latin1 COLLATE latin1_general_ci NULL AFTER `giphyid`;
+
+ALTER TABLE `multimedia_contributions` CHANGE `image` `imageraw` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE `multimedia_contributions_index1` CHANGE `image` `imageraw` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+ALTER TABLE `multimedia_contributions` ADD `image` VARCHAR(255) NOT NULL AFTER `imageraw`;
+
+ALTER TABLE `multimedia_contributions_index1` ADD `image` VARCHAR(255) NOT NULL AFTER `imageraw`;
+
+ALTER TABLE `multimedia_contributions` ADD `imagedisplayx1` INT(4) NOT NULL AFTER `image`, ADD `imagedisplayx2` INT(4) NOT NULL AFTER `imagedisplayx1`, ADD `imagedisplayy1` INT(4) NOT NULL AFTER `imagedisplayx2`, ADD `imagedisplayy2` INT(4) NOT NULL AFTER `imagedisplayy1`;
+
+ALTER TABLE `multimedia_contributions_index1` ADD `imagedisplayx1` INT(4) NOT NULL AFTER `image`, ADD `imagedisplayx2` INT(4) NOT NULL AFTER `imagedisplayx1`, ADD `imagedisplayy1` INT(4) NOT NULL AFTER `imagedisplayx2`, ADD `imagedisplayy2` INT(4) NOT NULL AFTER `imagedisplayy1`;
+
+
+
+
+
+
